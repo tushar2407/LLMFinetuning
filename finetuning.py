@@ -87,7 +87,6 @@ def training_function():
 
     max_seq_length = 1024  # max sequence length for model and packing of the dataset
 
-    # model, optimizer, train_dataloader = accelerator.prepare(model, optimizer, train_dataloader)
 
     trainer = SFTTrainer(
         model=model,
@@ -99,11 +98,13 @@ def training_function():
         dataset_text_field="text",
         args=args,
     )
+    accelerator = Accelerator()
+    trainer = accelerator.prepare(trainer)
 
     trainer.train()
 
     trainer.model.save_pretrained(new_model)
-    trainer.tokenizer.save_pretrained(new_model)
+    trainer.tokenizer.save_pretrained(new_model+"-tokenizer")
 
     return model
 
